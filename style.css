@@ -1,0 +1,162 @@
+/* General styles */
+body {
+    font-family: 'Roboto', sans-serif; /* Better font for readability */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px; /* Add padding for smaller devices */
+}
+
+.container {
+    background-color: #d7eef3;
+    padding: 60px 30px; /* Adjusted for more responsive design */
+    width: 100%;
+    max-width: 400px; /* Limit the max width for large screens */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+}
+
+
+p {
+    text-align: justify;
+    margin: 20px 0;
+    color: #666666;
+    line-height: 1.6; /* Better readability */
+}
+
+/* Dashboard styles */
+#dashboard {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 50px;
+}
+
+
+
+h3 {
+    text-align: center;
+    color: #061508;
+    font-weight: 500;
+}
+
+label {
+    font-weight: bold;
+    color: #444444;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    border-color: #3498db; /* Highlight on focus */
+}
+
+
+
+button:hover {
+    background-color: #39ff50;
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+#expense-history {
+    background-color: #f39c12;
+}
+
+#expense-history:hover {
+    background-color: #e67e22;
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Keyframes for animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 40px 20px;
+    }
+    
+    h2, h3 {
+        font-size: 1.2rem;
+    }
+    
+    button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+
+
+#expense-history-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#expense-history-container li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.container {
+    background-color: #d7eef3;
+    padding: 40px; /* Adjusted padding */
+    width: 400px; /* Increased width for better spacing */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px; /* Adjusted margin */
+    color: #3498db;
+}
+
+#expense-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Increased gap for better spacing */
+}
+
+form {
+    display: flex;
+    flex-direction: column; /* Aligns inputs vertically */
+    gap: 10px; /* Space between labels and inputs */
+}
+
+button {
+    align-self: center; /* Center buttons horizontally */
+    width: 100%; /* Full width for buttons */
+}
+
+#expense-history-container {
+    margin-top: 20px; /* Adds space above the history container */
+    text-align: center; /* Centers the content */
+}

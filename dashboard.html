@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add these to the head of your HTML -->
+     
+        <!-- Firebase App (Compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js"></script>
+    <!-- Firebase Database (Compatibility) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js"></script>
+     
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyBE-o-iAHoaxwzxjPX7468VY6hTZnaPetc",
+  authDomain: "expense-tracker-e5273.firebaseapp.com",
+  databaseURL: "https://expense-tracker-e5273-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "expense-tracker-e5273",
+  storageBucket: "expense-tracker-e5273.appspot.com",
+  messagingSenderId: "47737491871",
+  appId: "1:47737491871:web:b56605201494f96e2eadaa",
+  measurementId: "G-SPR5KFNCG1"
+};
+
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+// Function to save an expense
+function saveExpenseToDatabase(expense) {
+    const expenseRef = database.ref('expenses').push();
+    expenseRef.set(expense, (error) => {
+        if (error) {
+            console.log("Failed to save data:", error);
+        } else {
+            console.log("Expense saved successfully!");
+        }
+    });
+    // Function to read data from Firebase
+function getExpenses() {
+    db.ref('expenses').once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+            console.log(snapshot.val());
+        } else {
+            console.log("No data available");
+        }
+    }).catch((error) => {
+        console.error("Error fetching data:", error);
+    });
+}
+}
+</script>
+
+
+
+
+</head>
+<body>
+    <div class="container">
+        <h2>Dashboard</h2>
+        <p>Welcome to Expense Tracker Pro</p>
+        <div id="expense-forms">
+            <h3>Group Expense</h3>
+            <form id="group-expense-form">
+                <label for="group-name">Group Name:</label>
+                <input type="text" id="group-name" name="group-name" required>
+                <label for="group-amount">Amount:</label>
+                <input type="number" id="group-amount" name="group-amount" required>
+                <label for="group-description">Description:</label>
+                <textarea id="group-description" name="group-description"></textarea>
+                <button type="submit">Add Expense</button>
+            </form>
+            <h3>Private Expense</h3>
+            <form id="private-expense-form">
+                <label for="private-amount">Amount:</label>
+                <input type="number" id="private-amount" name="private-amount" required>
+                <label for="private-description">Description:</label>
+                <textarea id="private-description" name="private-description"></textarea>
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
+        <button id="expense-history">Expense History</button>
+        <div id="expense-history-container"></div>
+    </div>
+
+    <script src="script.js" defer></script>
+
+</body>
+</html>
