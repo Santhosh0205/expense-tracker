@@ -1,3 +1,26 @@
+// Save Expense to Firebase
+function saveExpense(type, expense) {
+    if (!currentUser) {
+        alert("User is not logged in. Please log in again.");
+        return; // Exit the function if currentUser is not set
+    }
+
+    let expensesRef = firebase.database().ref("expenses");
+
+    if (type === "group") {
+        expense.username = currentUser;
+        expensesRef.child("group").push(expense);
+    } else if (type === "private") {
+        expensesRef.child("private").child(currentUser).push(expense);
+    }
+}
+// Store user
+// localStorage.setItem('currentUser', username);
+
+// // Retrieve user on other pages
+// const currentUser = localStorage.getItem('currentUser');
+
+// Update currentUser when user logs in
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('login-form');
     const loginError = document.getElementById('login-error');
@@ -6,19 +29,20 @@ document.addEventListener("DOMContentLoaded", () => {
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault(); // Prevent default form submission
 
-            // Simulate successful login (replace with actual authentication logic)
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+
             if (username === 'san' && password === '123') { 
-                window.location.href = 'home.html'; // Redirect to home page on successful login
-            } 
-            if (username === 'suriya' && password === '123') { 
+                currentUser = 'san';
                 window.location.href = 'home.html';
-            }
-            if (username === 'vicky' && password === '123') {
+            } else if (username === 'suriya' && password === '123') {
+                currentUser = 'suriya';
                 window.location.href = 'home.html';
-            }
-            if (username === 'mani' && password === '123') { 
+            } else if (username === 'vicky' && password === '123') {
+                currentUser = 'vicky';
+                window.location.href = 'home.html';
+            } else if (username === 'mani' && password === '123') {
+                currentUser = 'mani';
                 window.location.href = 'home.html';
             } else {
                 loginError.textContent = 'Invalid username or password';
@@ -28,59 +52,70 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-
-// Save Expense to Firebase
-function saveExpense(type, expense) {
-    const db = firebase.database();
-    const expensesRef = db.ref("expenses");
-
-    // Save expense under 'group' or 'private' type
-    expensesRef.push({
-        type: type,
-        ...expense
-    });
-}
-
 // Retrieve Expenses from Firebase
 function displayExpenseHistory() {
-    const db = firebase.database();
-    const expensesRef = db.ref("expenses");
     const expenseHistoryContainer = document.getElementById("expense-history-container");
+    expenseHistoryContainer.innerHTML = ""; // Clear previous data
+    let expensesRef = firebase.database().ref("expenses");
 
-    expensesRef.once("value", (snapshot) => {
+    // Fetch Group Expenses (Visible to All)
+    expensesRef.child("group").once("value", (snapshot) => {
         const expenses = snapshot.val();
-        expenseHistoryContainer.innerHTML = ""; // Clear any previous data
+        if (expenses) {
+            const historyList = document.createElement("ul");
+            historyList.style.listStyleType = "none";
+            historyList.style.padding = "0";
 
-        if (!expenses) {
-            expenseHistoryContainer.innerHTML = "<p>No expenses recorded yet.</p>";
-            return;
+            Object.values(expenses).forEach((expense) => {
+                const listItem = document.createElement("li");
+                listItem.style.borderBottom = "1px solid #ccc";
+                listItem.style.padding = "10px";
+
+                listItem.innerHTML = `
+                    <strong>Group Expense</strong><br>
+                    Username: ${expense.username}<br>
+                    Group: ${expense.groupName}<br>
+                    Amount: ${expense.amount}<br>
+                    Description: ${expense.description || "N/A"}<br>
+                    Date: ${expense.date}
+                `;
+
+                historyList.appendChild(listItem);
+            });
+
+            expenseHistoryContainer.appendChild(historyList);
         }
+    });
 
-        const historyList = document.createElement("ul");
-        historyList.style.listStyleType = "none";
-        historyList.style.padding = "0";
+    // Fetch Private Expenses (Only Visible to Current User)
+    expensesRef.child("private").child(currentUser).once("value", (snapshot) => {
+        const privateExpenses = snapshot.val();
+        if (privateExpenses) {
+            const privateList = document.createElement("ul");
+            privateList.style.listStyleType = "none";
+            privateList.style.padding = "0";
 
-        Object.values(expenses).forEach((expense) => {
-            const listItem = document.createElement("li");
-            listItem.style.borderBottom = "1px solid #ccc";
-            listItem.style.padding = "10px";
+            Object.values(privateExpenses).forEach((expense) => {
+                const listItem = document.createElement("li");
+                listItem.style.borderBottom = "1px solid #ccc";
+                listItem.style.padding = "10px";
 
-            listItem.innerHTML = `
-                <strong>${expense.type === "group" ? "Group Expense" : "Private Expense"}</strong><br>
-                ${expense.groupName ? `<span>Group: ${expense.groupName}</span><br>` : ""}
-                Amount: ${expense.amount}<br>
-                Description: ${expense.description || "N/A"}<br>
-                Date: ${expense.date}
-            `;
+                listItem.innerHTML = `
+                    <strong>Private Expense</strong><br>
+                    Amount: ${expense.amount}<br>
+                    Description: ${expense.description || "N/A"}<br>
+                    Date: ${expense.date}
+                `;
 
-            historyList.appendChild(listItem);
-        });
+                privateList.appendChild(listItem);
+            });
 
-        expenseHistoryContainer.appendChild(historyList);
+            expenseHistoryContainer.appendChild(privateList);
+        }
     });
 }
 
-// Attach Event Listeners (Use Firebase Functions)
+// Attach Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
     const groupExpenseForm = document.getElementById("group-expense-form");
     const privateExpenseForm = document.getElementById("private-expense-form");
@@ -88,30 +123,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     groupExpenseForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-    
+
         const groupName = document.getElementById("group-name").value;
         const groupAmount = document.getElementById("group-amount").value;
         const groupDescription = document.getElementById("group-description").value;
-    
+
         const expense = {
             groupName,
             amount: groupAmount,
             description: groupDescription,
             date: new Date().toLocaleDateString(),
         };
-    
+
         try {
-            await saveExpense("group", expense); // Assuming saveExpense is async
+            await saveExpense("group", expense);
             alert("Group expense added successfully!");
         } catch (error) {
             console.error("Error adding expense:", error);
         }
-    
+
         groupExpenseForm.reset();
     });
-    
 
-    // Event listener for private expense form submission
     privateExpenseForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
@@ -129,8 +162,5 @@ document.addEventListener("DOMContentLoaded", () => {
         privateExpenseForm.reset();
     });
 
-    // Event listener for expense history button click
     expenseHistoryButton.addEventListener("click", displayExpenseHistory);
 });
-
-3
